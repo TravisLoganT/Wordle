@@ -37,3 +37,23 @@ for guess_number in range(1, 7):
     print("Incorrect letters:", ", ".join(sorted(wrong_letters)))
 else:
     print(f"The word was {word}")
+
+
+def main():
+    # This will start the pre-process of the game of getting a word
+    # word = get_random_word(...)
+
+    #This will be the main process of the game of actually playing
+    for guess_number in range(1, 7):
+        guess = input(f"Guess {guess_number}: ").upper()
+
+        # show_guess(...)
+        if guess == word:
+            break
+
+
+    # This will the post process of the game, displaying the result
+    # else:
+        # game_over(...)
+
+
