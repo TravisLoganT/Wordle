@@ -1,5 +1,9 @@
 import pathlib, random
 from string import ascii_letters
+from rich.console import Console
+from rich.theme import Theme
+
+CONSOLE = Console(width=40, theme=Theme({"warning": "red on yellow"}))
 
 
 def get_random_word(word_list):
@@ -17,6 +21,11 @@ def get_random_word(word_list):
         if len(word) == 5 and all(letter in ascii_letters for letter in word)
     ]
     return random.choice(words)
+
+
+def clear_page(headline):
+    CONSOLE.clear()
+    CONSOLE.rule(f"[bold blue]:rose: {headline} :rose:[/]\n")
 
 
 def show_guess(guess, word):
