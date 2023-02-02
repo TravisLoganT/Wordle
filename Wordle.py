@@ -18,7 +18,14 @@ def get_random_word():
 
 
 def show_guess(guess, word):
-    """Compare the users inputted word to the randomly chosen word"""
+    """Compare the users inputted word to the randomly chosen word
+
+    ## Example:
+    >>> show_guess("CRANE", "SNAKE")
+    Correct letters: A, E
+    Misplaced letters: N
+    Incorrect letters: C, R
+    """
 
     # check each letter and if it's the right letter and in correct spot,
     # put into a list
