@@ -2,16 +2,18 @@ import pathlib, random
 from string import ascii_letters
 
 
-def get_random_word():
-    """Choose a random word from the wordist that has been generated"""
-
-    # acquire the list of words
-    wordlist = pathlib.Path("wordlist.txt")
+def get_random_word(word_list):
+    """Choose a random word from the wordist that has been generated
+    
+    ##Example:
+    >>> get_random_word(["snake", "worm", "it'll"])
+    'SNAKE'
+    """
 
     # sort the file and grab each word on a new line and then choose a random word
     words = [
         word.upper()
-        for word in wordlist.read_text(encoding="utf-8").strip().split("\n")
+        for word in word_list
         if len(word) == 5 and all(letter in ascii_letters for letter in word)
     ]
     return random.choice(words)
@@ -54,7 +56,8 @@ def game_over(word):
 
 def main():
     # This will start the pre-process of the game of getting a word
-    word = get_random_word()
+    words_path = pathlib.Path(__file__).parent / "wordlist.txt"
+    word = get_random_word(words_path.read_text(encoding="utf-8"). split("\n"))
 
     #This will be the main process of the game of actually playing
     for guess_number in range(1, 7):
