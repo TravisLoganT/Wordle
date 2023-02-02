@@ -24,6 +24,8 @@ def get_random_word(word_list):
 
 
 def clear_page(headline):
+    """Clears the page, and allows for a clearer display"""
+
     CONSOLE.clear()
     CONSOLE.rule(f"[bold blue]:rose: {headline} :rose:[/]\n")
 
@@ -38,6 +40,7 @@ def show_guesses(guesses, word):
     Incorrect letters: C, R
     """
 
+    # Stylise each guess depending on the letters used
     for guess in guesses:
         stylised_guess = []
         for letter, correct in zip(guess, word):
@@ -54,11 +57,17 @@ def show_guesses(guesses, word):
         CONSOLE.print("".join(stylised_guess), justify="center")
 
 
-def game_over(word):
+def game_over(guesses, word, correctly_guessed):
     """Display what the word the user was trying to guess"""
 
-    print(f"The word was {word}")
+    clear_page(headline="Game Over")
+    show_guesses(guesses, word)
 
+    # State whether the used was right on their last go
+    if correctly_guessed:
+        CONSOLE.print(f"\n[bold white on green]Correct, the word is {word}[/]")
+    else:
+        CONSOLE.print(f"\n[bold white on red]Sorry, the word was {word}[/]")
 
 
 def main():
@@ -77,8 +86,7 @@ def main():
             break
 
     # This will the post process of the game, displaying the result
-    else:
-        game_over(word)
+    game_over(total_guesses, word, correctly_guessed=[index] == word)
 
 
 if __name__ == "__main__":
