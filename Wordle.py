@@ -76,6 +76,8 @@ def main():
     word = get_random_word(words_path.read_text(encoding="utf-8"). split("\n"))
     total_guesses = ["_" * 5] * 6
 
+    print(word)
+
     #This will be the main process of the game of actually playing
     for index in range(6):
         clear_page(headline=f"Guess {index + 1}")
@@ -86,7 +88,7 @@ def main():
             break
 
     # This will the post process of the game, displaying the result
-    game_over(total_guesses, word, correctly_guessed=[index] == word)
+    game_over(total_guesses, word, correctly_guessed=total_guesses[index] == word)
 
 
 if __name__ == "__main__":
