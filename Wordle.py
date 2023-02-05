@@ -1,9 +1,14 @@
 import pathlib, random
-from string import ascii_letters
+from string import ascii_letters, ascii_uppercase
 from rich.console import Console
 from rich.theme import Theme
+import contextlib
 
 CONSOLE = Console(width=50, theme=Theme({"warning": "red on yellow"}))
+
+NUM_OF_LETTERS = 5
+NUM_OF_GUESSES = 6
+WORDS_PATH = pathlib.Path(__file__).parent / "wordlist.txt"
 
 
 def guess_word(previous_guesses):
@@ -14,8 +19,8 @@ def guess_word(previous_guesses):
         CONSOLE.print(f"You've already guessed {guess}.", style="warning")
         return guess_word(previous_guesses)
 
-    if len(guess) != 5:
-        CONSOLE.print("Your guess must be 5 letters", style="warning")
+    if len(guess) != NUM_OF_LETTERS:
+        CONSOLE.print(f"Your guess must be {NUM_OF_LETTERS} letters", style="warning")
         return guess_word(previous_guesses)
 
     if any((invalid := letter) not in ascii_letters for letter in guess):
@@ -41,11 +46,11 @@ def get_random_word(word_list):
     if words := [
         word.upper()
         for word in word_list
-        if len(word) == 5 and all(letter in ascii_letters for letter in word)
+        if len(word) == NUM_OF_LETTERS and all(letter in ascii_letters for letter in word)
     ]:
         return random.choice(words)
     else:
-        CONSOLE.print("No words of length 5 in the word list", style="warning")
+        CONSOLE.print(f"No words of length {NUM_OF_LETTERS} in the word list", style="warning")
         raise SystemExit()
 
 
@@ -67,6 +72,7 @@ def show_guesses(guesses, word):
     """
 
     # Stylise each guess depending on the letters used
+    status_of_letters = {letter: letter for letter in ascii_uppercase}
     for guess in guesses:
         stylised_guess = []
         for letter, correct in zip(guess, word):
@@ -79,8 +85,12 @@ def show_guesses(guesses, word):
             else:
                 style = "dim"
             stylised_guess.append(f"[{style}]{letter}[/]")
+            if letter != "_":
+                status_of_letters[letter] = f"[{style}]{letter}[/]"
+                
 
         CONSOLE.print("".join(stylised_guess), justify="center")
+    CONSOLE.print("\n" + "".join(status_of_letters.values()), justify="center")
 
 
 def game_over(guesses, word, correctly_guessed):
@@ -99,19 +109,20 @@ def game_over(guesses, word, correctly_guessed):
 def main():
     # This will start the pre-process of the game of getting a word
     words_path = pathlib.Path(__file__).parent / "wordlist.txt"
-    word = get_random_word(words_path.read_text(encoding="utf-8"). split("\n"))
-    total_guesses = ["_" * 5] * 6
+    word = get_random_word(WORDS_PATH.read_text(encoding="utf-8"). split("\n"))
+    total_guesses = ["_" * NUM_OF_LETTERS] * NUM_OF_GUESSES
 
     print(word)
 
     #This will be the main process of the game of actually playing
-    for index in range(6):
-        clear_page(headline=f"Guess {index + 1}")
-        show_guesses(total_guesses, word)
+    with contextlib.suppress(KeyboardInterrupt):
+        for index in range(NUM_OF_GUESSES):
+            clear_page(headline=f"Guess {index + 1}")
+            show_guesses(total_guesses, word)
 
-        total_guesses[index] = guess_word(previous_guesses=total_guesses[:index])
-        if total_guesses[index] == word:
-            break
+            total_guesses[index] = guess_word(previous_guesses=total_guesses[:index])
+            if total_guesses[index] == word:
+                break
 
     # This will the post process of the game, displaying the result
     game_over(total_guesses, word, correctly_guessed=total_guesses[index] == word)
