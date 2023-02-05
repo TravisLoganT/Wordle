@@ -3,7 +3,30 @@ from string import ascii_letters
 from rich.console import Console
 from rich.theme import Theme
 
-CONSOLE = Console(width=40, theme=Theme({"warning": "red on yellow"}))
+CONSOLE = Console(width=50, theme=Theme({"warning": "red on yellow"}))
+
+
+def guess_word(previous_guesses):
+
+    guess = CONSOLE.input("\nGuess word: ").upper()
+
+    if guess in previous_guesses:
+        CONSOLE.print(f"You've already guessed {guess}.", style="warning")
+        return guess_word(previous_guesses)
+
+    if len(guess) != 5:
+        CONSOLE.print("Your guess must be 5 letters", style="warning")
+        return guess_word(previous_guesses)
+
+    if any((invalid := letter) not in ascii_letters for letter in guess):
+        CONSOLE.print(
+            f"Invalid letter: '{invalid}'. You must use English letters.",
+            style="warning",
+        )
+        return guess_word(previous_guesses)
+
+    return guess
+
 
 
 def get_random_word(word_list):
@@ -15,12 +38,15 @@ def get_random_word(word_list):
     """
 
     # sort the file and grab each word on a new line and then choose a random word
-    words = [
+    if words := [
         word.upper()
         for word in word_list
         if len(word) == 5 and all(letter in ascii_letters for letter in word)
-    ]
-    return random.choice(words)
+    ]:
+        return random.choice(words)
+    else:
+        CONSOLE.print("No words of length 5 in the word list", style="warning")
+        raise SystemExit()
 
 
 def clear_page(headline):
@@ -83,7 +109,7 @@ def main():
         clear_page(headline=f"Guess {index + 1}")
         show_guesses(total_guesses, word)
 
-        total_guesses[index] = input("\nGuess word: ").upper()
+        total_guesses[index] = guess_word(previous_guesses=total_guesses[:index])
         if total_guesses[index] == word:
             break
 
